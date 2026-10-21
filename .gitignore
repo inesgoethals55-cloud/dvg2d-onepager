@@ -1,0 +1,6 @@
+# hulpmiddelen van Claude Code en de skills, niet nodig op de website
+.claude/
+.agents/
+skills-lock.json
+# geheime tokens
+.env

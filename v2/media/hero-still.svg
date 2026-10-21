@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="1080" height="1080">
+  <!-- Bronbeeld voor de hero-video: dezelfde vormen als de hero, zonder selectie-laag -->
+  <rect width="400" height="400" fill="#f0f0f0"/>
+  <circle cx="250" cy="215" r="135" fill="#78000f"/>
+  <path d="M44.8 373.2 C181.2 385.6 255.6 311.2 243.2 174.8 C106.8 162.4 32.4 236.8 44.8 373.2 Z" fill="#74343f"/>
+  <rect x="300" y="300" width="56" height="56" transform="rotate(14 328 328)" fill="#8a8a8a"/>
+  <circle cx="96" cy="96" r="16" fill="#d4ff3d" stroke="#0e0e0e" stroke-width="2"/>
+  <g fill="#0e0e0e">
+    <rect x="40" y="150" width="120" height="6"/>
+    <rect x="40" y="164" width="120" height="6"/>
+    <rect x="40" y="178" width="120" height="6"/>
+  </g>
+</svg>

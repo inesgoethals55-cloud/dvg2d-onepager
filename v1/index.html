@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Digitale Vormgeving — Startgids</title>
+  <meta name="description" content="Onepager voor nieuwe studenten Digitale Vormgeving: wat je leert, je eerste week, je toolkit en tips.">
+  <meta name="theme-color" content="#0e0e0e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span class="progress__bar"></span></div>
+
+  <header class="nav">
+    <a class="nav__logo" href="#top" aria-label="Naar boven">
+      <span class="nav__mark" aria-hidden="true"></span>DVG
+    </a>
+    <p class="nav__current" aria-live="polite"><span class="nav__num">00</span><span class="nav__title">Intro</span></p>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="nav__toggle-label">Menu</span>
+      <span class="nav__burger" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </header>
+
+  <nav class="menu" id="menu" aria-label="Hoofdstukken" hidden>
+    <ol class="menu__list"></ol>
+    <div class="menu__art" aria-hidden="true"></div>
+  </nav>
+
+  <main id="top">
+    <section class="hero t-dark" aria-label="Intro">
+      <div class="hero__art" aria-hidden="true"></div>
+      <div class="hero__inner">
+        <p class="hero__kicker"></p>
+        <h1 class="hero__title"></h1>
+        <div class="hero__foot">
+          <p class="hero__lead"></p>
+          <a class="hero__scroll" href="#content">Scroll<span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <svg class="hero__badge" viewBox="0 0 200 200" aria-hidden="true">
+        <defs><path id="badge-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+        <text><textPath href="#badge-circle">NIEUWE STUDENTEN ✶ DIGITALE VORMGEVING ✶ 2026 ✶ </textPath></text>
+        <circle cx="100" cy="100" r="34"/>
+      </svg>
+    </section>
+
+    <div id="content"></div>
+
+    <noscript>
+      <p class="fallback">Zet JavaScript aan om de inhoud uit <code>content.md</code> te laden.</p>
+    </noscript>
+  </main>
+
+  <footer class="footer t-dark">
+    <p class="footer__big" aria-hidden="true">Maak<span>.</span></p>
+    <div class="footer__row">
+      <p>Digitale Vormgeving — Startgids 2026–2027</p>
+      <a href="#top">Terug naar boven ↑</a>
+    </div>
+  </footer>
+
+  <script src="js/content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

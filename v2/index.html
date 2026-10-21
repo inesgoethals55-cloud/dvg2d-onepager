@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Digitale Vormgeving — Startgids</title>
+  <meta name="description" content="Startgids voor nieuwe studenten Digitale Vormgeving: wat je leert, je eerste week, je toolkit en tips.">
+  <meta name="theme-color" content="#f0f0f0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Three.js voor de 3D-vormen (js/three-scene.js) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span class="progress__bar"></span></div>
+
+  <header class="nav" data-bg="light">
+    <a class="nav__logo" href="#top">Digitale Vormgeving</a>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+  </header>
+
+  <nav class="menu" id="menu" aria-label="Secties" data-bg="primary" hidden>
+    <ul class="menu__list"></ul>
+  </nav>
+
+  <main id="top">
+    <section class="hero" data-bg="light" aria-label="Intro">
+      <div class="hero__art" aria-hidden="true"></div>
+
+      <div class="hero__inner">
+        <div class="bbox">
+          <h1 class="hero__title"></h1>
+          <div class="bbox__ui" aria-hidden="true">
+            <i class="bbox__corner bbox__corner--tl"></i>
+            <i class="bbox__corner bbox__corner--tr"></i>
+            <i class="bbox__corner bbox__corner--bl"></i>
+            <i class="bbox__corner bbox__corner--br"></i>
+            <span class="bbox__dim"></span>
+          </div>
+          <button class="bbox__handle" type="button" role="slider"
+                  aria-label="Letterbreedte van de titel"
+                  aria-valuemin="62" aria-valuemax="125" aria-valuenow="88"></button>
+          <div class="cursor" aria-hidden="true">
+            <svg viewBox="0 0 16 22"><path d="M1 1 L1 17 L5.5 13 L8.5 20.5 L11 19.5 L8 12 L14 12 Z"/></svg>
+            <span>jij</span>
+          </div>
+        </div>
+
+        <div class="hero__foot">
+          <p class="hero__lead"></p>
+          <p class="hero__hint">Sleep het gele handvat om de letterbreedte te veranderen.</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="content"></div>
+
+    <noscript>
+      <p class="fallback">Zet JavaScript aan om de inhoud uit content.md te laden.</p>
+    </noscript>
+  </main>
+
+  <footer class="footer" data-bg="dark">
+    <p>Startgids Digitale Vormgeving 2026–2027</p>
+    <a href="#top">Terug naar boven</a>
+  </footer>
+
+  <script src="js/content.js"></script>
+  <script src="js/shapes.js"></script>
+  <script src="js/three-scene.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

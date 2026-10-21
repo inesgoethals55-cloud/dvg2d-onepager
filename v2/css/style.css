@@ -1,0 +1,580 @@
+/* ==========================================================
+   Digitale Vormgeving — Startgids · v2
+   Concept: de pagina als artboard. Vormen zijn "geselecteerd"
+   zoals in een ontwerpprogramma: geel kader, ankerpunten, handvatten.
+
+   60-30-10
+     60%  light + dark                (vlakken, tekst)
+     30%  primary + secondary + neutral (vormen, twee secties)
+     10%  accent                      (alleen de selectie-laag + focus)
+
+   Kleurensysteem (zie "PALET" hieronder)
+     Je past enkel de zes --brand-* kleuren aan. js/main.js kiest daarna per
+     achtergrond automatisch: tekstkleur, zachte tekst, vormkleuren, citaatkleur
+     en of het accent een rand nodig heeft. Zo blijft alles leesbaar (WCAG).
+
+   Letters
+     Archivo        vette display, breedte-as 62–125 is het speelveld
+     Source Serif 4 broodtekst, rustig contrast met de grotesk
+   ========================================================== */
+
+:root {
+  /* ---------- PALET: pas hier aan ---------- */
+  --brand-light: #f0f0f0;     /* lichte vlakken, tekst op donker */
+  --brand-dark: #0e0e0e;      /* tekst, donkere vlakken */
+  --brand-primary: #78000f;   /* rood: hoofdkleur van vormen en één sectie */
+  --brand-secondary: #74343f; /* wijn: tweede vormkleur en één sectie */
+  --brand-neutral: #8a8a8a;   /* grijs: ondersteunende vormen */
+  --brand-accent: #d4ff3d;    /* accent (10%): enkel de selectie-laag + focus */
+  /* ------------------------------------------ */
+
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --text: "Source Serif 4", Georgia, serif;
+
+  /* typografische schaal (klassiek: 14 · 18 · 24 · 36 · 48 · 72 …) */
+  --fs-small: .875rem;
+  --fs-body: clamp(1.0625rem, 1rem + .25vw, 1.25rem);
+  --fs-lead: clamp(1.25rem, 1.1rem + .6vw, 1.625rem);
+  --fs-h3: clamp(1.375rem, 1.2rem + .8vw, 2rem);
+  --fs-h2: clamp(2.75rem, 1.6rem + 5.4vw, 7rem);
+  --fs-quote: clamp(2rem, 1.2rem + 3.8vw, 5rem);
+
+  --gutter: clamp(20px, 5vw, 72px);
+  --nav-h: 60px;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-h);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  font-family: var(--text);
+  font-size: var(--fs-body);
+  font-optical-sizing: auto;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: .2em; }
+svg { display: block; max-width: 100%; }
+::selection { background: var(--brand-accent); color: var(--on-accent, var(--brand-dark)); }
+
+:focus-visible {
+  outline: 3px solid var(--brand-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--accent-edge, var(--brand-dark));
+}
+
+/* ---------- vlakken ---------- */
+/* Elke zone zegt enkel welke achtergrond ze heeft (data-bg). De rest berekent
+   js/main.js (smartColors). Deze waarden zijn de terugval zonder JavaScript. */
+[data-bg] {
+  --fg: var(--brand-dark);
+  --soft: color-mix(in srgb, var(--fg) 72%, var(--bg));
+  --s1: var(--brand-primary);
+  --s2: var(--brand-secondary);
+  --s3: var(--brand-neutral);
+  --quote: var(--fg);
+  --accent-edge: var(--brand-dark); /* rand rond het accent als het te weinig contrasteert */
+  --on-accent: var(--brand-dark);   /* tekst op een accentvlak */
+  background: var(--bg);
+  color: var(--fg);
+}
+[data-bg="light"]     { --bg: var(--brand-light); }
+[data-bg="dark"]      { --bg: var(--brand-dark);      --fg: var(--brand-light); }
+[data-bg="primary"]   { --bg: var(--brand-primary);   --fg: var(--brand-light); }
+[data-bg="secondary"] { --bg: var(--brand-secondary); --fg: var(--brand-light); }
+[data-bg="neutral"]   { --bg: var(--brand-neutral); }
+[data-bg="accent"]    { --bg: var(--brand-accent); }
+
+/* ---------- voortgang + nav ---------- */
+.progress { position: fixed; inset: 0 0 auto; height: 4px; z-index: 60; }
+.progress__bar {
+  display: block;
+  height: 100%;
+  background: var(--brand-accent);
+  box-shadow: 0 1px 0 var(--brand-dark);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--gutter);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  font-family: var(--display);
+}
+.nav__logo {
+  font-weight: 900;
+  font-stretch: 125%;
+  font-size: 1rem;
+  letter-spacing: -.01em;
+  text-decoration: none;
+}
+.nav__toggle {
+  padding: .5rem 1.1rem;
+  border: 2px solid var(--fg);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: 700 .9375rem/1 var(--display);
+  cursor: pointer;
+}
+.nav__toggle:hover,
+.nav__toggle[aria-expanded="true"] { background: var(--fg); color: var(--bg); }
+
+.menu {
+  position: fixed;
+  inset: var(--nav-h) 0 0;
+  z-index: 45;
+  padding: clamp(1.5rem, 5vw, 4rem) var(--gutter);
+  overflow-y: auto;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path .5s var(--ease);
+}
+.menu[hidden] { display: block; visibility: hidden; }
+.menu.is-open { clip-path: inset(0); visibility: visible; }
+.menu__list { list-style: none; margin: 0; padding: 0; }
+.menu__list a {
+  display: block;
+  padding: .2em 0;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 75%;
+  font-size: clamp(2.25rem, 7vw, 6rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  text-decoration: none;
+  transition: font-stretch .4s var(--ease);
+}
+/* het menu reageert met dezelfde breedte-as als de hero */
+.menu__list a:hover,
+.menu__list a:focus-visible { font-stretch: 125%; }
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + clamp(3rem, 9vh, 7rem)) var(--gutter) clamp(2rem, 6vh, 4rem);
+  display: flex;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 8vh, 6rem);
+}
+
+.hero__art {
+  position: absolute;
+  z-index: 0;
+  right: calc(var(--gutter) * -1);
+  bottom: -22%;
+  width: min(50vw, 680px);
+  pointer-events: none;
+}
+
+/* "darken" laat de lichtgrijze achtergrond van het beeld wegvallen in de pagina */
+.hero__still {
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: darken;
+}
+
+/* het selectiekader */
+.bbox {
+  position: relative;
+  align-self: flex-start;
+  max-width: 100%;
+}
+.hero__title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 900;
+  line-height: .86;
+  letter-spacing: -.025em;
+}
+.hero__pre {
+  display: block;
+  margin-bottom: .45em;
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  font-weight: 800;
+  font-stretch: 125%;
+  letter-spacing: -.01em;
+  line-height: 1;
+}
+.hero__word {
+  display: block;
+  width: max-content; /* zodat JS de echte tekstbreedte meet */
+  white-space: nowrap;
+  font-size: 15vw; /* JS zet dit exact */
+  font-stretch: 88%;
+}
+
+.bbox__ui {
+  position: absolute;
+  inset: -10px -12px -12px -12px;
+  border: 2px solid var(--brand-accent);
+  box-shadow: 0 0 0 1px var(--accent-edge), inset 0 0 0 1px var(--accent-edge);
+  pointer-events: none;
+}
+.bbox__corner {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: var(--bg);
+  border: 1.5px solid var(--fg);
+}
+.bbox__corner--tl { top: -5px; left: -5px; }
+.bbox__corner--tr { top: -5px; right: -5px; }
+.bbox__corner--bl { bottom: -5px; left: -5px; }
+.bbox__corner--br { bottom: -5px; right: -5px; }
+
+.bbox__dim {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  padding: .2em .55em;
+  border-radius: 3px;
+  background: var(--brand-accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent-edge);
+  font: 700 .75rem/1.3 var(--display);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.bbox__handle {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin: -9px -9px 0 0;
+  border: 2px solid var(--fg);
+  border-radius: 2px;
+  background: var(--brand-accent);
+  cursor: ew-resize;
+  touch-action: none;
+  z-index: 3;
+}
+/* groter raakvlak voor vingers */
+.bbox__handle::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+}
+.bbox__handle:hover,
+.bbox__handle.is-dragging { background: var(--fg); }
+
+.cursor {
+  position: absolute;
+  z-index: 4;
+  top: calc(50% + 2px);
+  left: calc(100% + 14px);
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  pointer-events: none;
+  opacity: 0;
+}
+.cursor svg { width: 18px; fill: var(--brand-accent); stroke: var(--fg); stroke-width: 1.4; }
+.cursor span {
+  margin-top: 16px;
+  padding: .1em .5em;
+  border-radius: 3px;
+  background: var(--brand-accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent-edge);
+  font: 700 .75rem/1.4 var(--display);
+}
+
+.hero__foot {
+  display: grid;
+  max-width: 32rem;
+  gap: 1rem;
+}
+.hero__lead {
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+}
+.hero__hint {
+  margin: 0;
+  max-width: 20rem;
+  color: var(--soft);
+  font-size: var(--fs-small);
+  font-style: italic;
+}
+
+/* ---------- secties ---------- */
+.section {
+  position: relative;
+  padding: clamp(5rem, 12vw, 10rem) var(--gutter);
+  overflow: hidden;
+}
+.section__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(16px, 2.2vw, 36px);
+  row-gap: clamp(2.5rem, 5vw, 4.5rem);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.section__title {
+  grid-column: 1 / span 8;
+  grid-row: 1;
+  align-self: end;
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 100%;
+  font-size: var(--fs-h2);
+  line-height: .92;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+}
+
+.section__art {
+  grid-column: 9 / -1;
+  grid-row: 1 / span 2;
+  align-self: start;
+  width: 100%;
+  max-width: 420px;
+  justify-self: end;
+}
+
+.section__body {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  row-gap: clamp(2rem, 4vw, 3.5rem);
+}
+.section__body > * { grid-column: 1 / -1; margin: 0; }
+.section__body > p {
+  grid-column: 1 / span 7;
+  max-width: 62ch;
+}
+.section__body > p + p { margin-top: -1rem; }
+
+/* citaat: de display-letter, smal en zwaar */
+.quote {
+  grid-column: 1 / span 10;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: var(--fs-quote);
+  line-height: .95;
+  letter-spacing: -.02em;
+  color: var(--quote);
+}
+.quote p { margin: 0; text-wrap: balance; }
+.quote p::before { content: "“"; }
+.quote p::after { content: "”"; }
+
+.punch {
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 125%;
+  font-size: var(--fs-h3);
+  line-height: 1.1;
+}
+
+/* disciplines (### in de markdown) */
+.disciplines {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2.5rem, 5vw, 4.5rem) clamp(16px, 2.2vw, 36px);
+}
+.discipline svg {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1.25rem;
+  fill: var(--s1);
+}
+/* vormkleuren roteren door het palet */
+.discipline:nth-child(3n+2) svg { fill: var(--s2); }
+.discipline:nth-child(3n) svg { fill: var(--s3); }
+.discipline h3,
+.tip h3 {
+  margin: 0 0 .5rem;
+  font-family: var(--display);
+  font-weight: 800;
+  font-stretch: 112%;
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+  letter-spacing: -.015em;
+}
+.discipline p,
+.tip p { margin: 0; max-width: 34ch; color: var(--soft); }
+
+/* tijdlijn: de enige echte reeks, dus de enige plek met nummers */
+.timeline {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(16px, 2.2vw, 36px);
+  border-top: 3px solid var(--fg);
+}
+.timeline li { position: relative; padding-top: 1.75rem; }
+.timeline li::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--fg);
+}
+.timeline li:first-child::before { background: var(--fg); }
+.timeline__day {
+  display: block;
+  margin-bottom: .6rem;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 125%;
+  font-size: clamp(1.75rem, 1.2rem + 1.8vw, 3rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.timeline p { margin: 0; color: var(--soft); max-width: 24ch; }
+
+/* toolkit als definitielijst */
+.tools {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(16px, 2.2vw, 36px);
+}
+.tools dt,
+.tools dd {
+  margin: 0;
+  padding: 1.1rem 0;
+  border-top: 1.5px solid currentColor;
+}
+.tools dd { color: var(--soft); border-top-color: var(--fg); }
+.tools dt {
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+}
+.tools dt:last-of-type, .tools dd:last-of-type { border-bottom: 1.5px solid var(--fg); }
+
+/* tips */
+.tips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2.5rem, 5vw, 4rem) clamp(24px, 4vw, 72px);
+}
+.tip { padding-left: clamp(1rem, 2vw, 1.75rem); border-left: 3px solid var(--fg); }
+
+/* 3D-vormen (three-scene.js): het canvas vervangt de platte SVG/het beeld zodra het rendert */
+.art3d {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+.is-3d > svg,
+.is-3d > img { display: none; }
+
+/* vormen met ankerpunten */
+.shape-art { overflow: visible; }
+.anchor { fill: var(--bg); stroke: var(--fg); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.anchor--on { fill: var(--brand-accent); }
+.handle-line { stroke: var(--brand-accent); stroke-width: 2; vector-effect: non-scaling-stroke; fill: none; }
+.handle-end { fill: var(--brand-accent); stroke: var(--accent-edge); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+/* inktlijn onder het geel, zodat de selectie ook op papier zichtbaar is */
+.sel-under { fill: none; stroke: var(--accent-edge); stroke-width: 4; vector-effect: non-scaling-stroke; }
+.path-outline { fill: none; stroke: var(--brand-accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+
+/* ---------- footer ---------- */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 2rem var(--gutter);
+  font-size: var(--fs-small);
+  color: var(--soft);
+}
+.footer p { margin: 0; }
+.footer a { color: var(--fg); }
+
+.fallback { padding: 4rem var(--gutter); margin: 0; }
+
+/* ---------- tablet ---------- */
+@media (max-width: 960px) {
+  .section__title { grid-column: 1 / span 9; }
+  .section__art { grid-column: 9 / -1; }
+  .section__body > p { grid-column: 1 / span 10; }
+  .disciplines { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .timeline { grid-template-columns: 1fr; border-top: 0; border-left: 3px solid var(--fg); gap: 2rem; }
+  .timeline li { padding: 0 0 0 1.75rem; }
+  .timeline li::before { top: .5rem; left: -9px; }
+  .timeline p { max-width: 46ch; }
+}
+
+/* ---------- mobiel ---------- */
+@media (max-width: 640px) {
+  :root { --nav-h: 56px; }
+
+  /* op mobiel komt de vorm onder de tekst, niet erachter */
+  .hero { flex-direction: column; padding-bottom: 0; }
+  .hero__inner { gap: 3rem; }
+  .hero__art {
+    position: relative;
+    order: 2;
+    right: auto;
+    bottom: auto;
+    align-self: flex-end;
+    width: 78vw;
+    margin: 2.5rem calc(var(--gutter) * -1) -16vw 0;
+  }
+
+  .section__title { grid-column: 1 / -1; grid-row: 2; }
+  .section__art { grid-column: 1 / -1; grid-row: 1; max-width: 62%; justify-self: end; }
+  .section__body > p, .quote { grid-column: 1 / -1; }
+
+  .disciplines, .tips { grid-template-columns: 1fr; }
+  .tools { grid-template-columns: 1fr; }
+  .tools dd { border-top: 0; padding-top: 0; }
+  .tools dt:last-of-type { border-bottom: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

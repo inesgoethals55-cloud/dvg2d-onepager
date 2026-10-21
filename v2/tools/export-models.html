@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D-modellen exporteren</title>
+  <style>
+    body { margin: 0; padding: 2rem; font: 1rem/1.5 system-ui, sans-serif; background: #f0f0f0; color: #0e0e0e; }
+    h1 { margin: 0 0 .5rem; font-size: 1.5rem; }
+    p { max-width: 60ch; }
+    button { padding: .7rem 1.2rem; border: 2px solid #0e0e0e; border-radius: 999px; background: #d4ff3d; font: 700 1rem system-ui; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #0e0e0e; outline-offset: 3px; }
+    ul { padding-left: 1.2rem; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>3D-modellen exporteren</h1>
+  <p>Deze pagina maakt van de vormen in <code>js/shapes.js</code> echte 3D-modellen (GLB).
+     Pas je een vorm aan, klik dan op de knop en zet de bestanden in de map <code>v2/models/</code>.
+     De modellen zijn ook bruikbaar in Blender of andere 3D-programma's.</p>
+  <button type="button" id="export">Download de 5 modellen</button>
+  <ul id="log" aria-live="polite"></ul>
+
+  <script src="../js/shapes.js"></script>
+  <script src="../js/three-scene.js"></script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+
+    const log = (msg) => {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      document.getElementById('log').appendChild(li);
+    };
+
+    async function exportModel(name) {
+      const geo = window.DVG3D.buildGeometry(THREE, name);
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.55 }));
+      mesh.name = name;
+      return new GLTFExporter().parseAsync(mesh, { binary: true });
+    }
+
+    // ?post=<adres> stuurt de bestanden naar een lokale ontvanger in plaats van te downloaden
+    const post = new URLSearchParams(location.search).get('post');
+
+    document.getElementById('export').addEventListener('click', async () => {
+      for (const name of window.DVG3D.MODELS) {
+        const glb = await exportModel(name);
+        if (post) {
+          await fetch(`${post}?name=${name}.glb`, { method: 'POST', body: glb });
+        } else {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([glb], { type: 'model/gltf-binary' }));
+          a.download = `${name}.glb`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+        }
+        log(`${name}.glb (${Math.round(glb.byteLength / 1024)} kB)`);
+      }
+      log('Klaar.');
+    });
+  </script>
+</body>
+</html>
